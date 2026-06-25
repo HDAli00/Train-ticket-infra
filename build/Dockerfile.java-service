@@ -1,0 +1,46 @@
+# Multi-stage Java 21 build for every train-ticket Java microservice.
+#
+# Usage (run from the HDAli00/train-ticket source root):
+#   docker build --build-arg SVC=ts-order-service \
+#                -t hdali00/ts-order-service:latest \
+#                -f /path/to/train-ticket-infra/build/Dockerfile.java-service .
+#
+# The build stage compiles the target service (and its intra-repo dependencies)
+# with Maven. The runtime stage ships only the JRE + the compiled JAR.
+
+# --------------------------------------------------------------------------- build
+FROM maven:3.9-eclipse-temurin-21 AS build
+
+ARG SVC
+WORKDIR /src
+
+# Copy the full source tree so Maven can resolve intra-module references.
+COPY . .
+
+# Build only the requested module (and its Maven dependencies within the project).
+RUN mvn package -DskipTests -pl "${SVC}" -am -q
+
+# --------------------------------------------------------------------------- runtime
+FROM eclipse-temurin:21-jre-alpine
+
+ARG SVC
+
+# Timezone — keep UTC in containers; adjust at the compose level if needed.
+RUN apk add --no-cache tzdata \
+    && cp /usr/share/zoneinfo/UTC /etc/localtime \
+    && echo UTC > /etc/timezone \
+    && apk del tzdata
+
+COPY --from=build /src/${SVC}/target/*.jar /app/app.jar
+
+# --add-opens flags: Spring Boot 2.x uses reflection patterns that Java 9+
+# restricts by default. These replicate what Spring Boot 3.x sets automatically
+# and prevent IllegalAccessError on Java 21 with legacy Spring Boot 2.x code.
+ENV JAVA_OPTS="\
+  -XX:MaxRAMPercentage=75.0 \
+  --add-opens=java.base/java.lang=ALL-UNNAMED \
+  --add-opens=java.base/java.util=ALL-UNNAMED \
+  --add-opens=java.base/java.lang.reflect=ALL-UNNAMED \
+  --add-opens=java.base/java.io=ALL-UNNAMED"
+
+CMD ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar"]

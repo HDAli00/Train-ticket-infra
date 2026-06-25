@@ -1,0 +1,428 @@
+# Train-ticket local sandbox deployment.
+#
+# Runs the full 45-service train-ticket application stack using images you
+# built and pushed via build/Makefile. See .env.example for configuration.
+#
+# Quick start (after `make build-all && make push-all` in ./build/):
+#   docker compose pull
+#   docker compose up -d
+#
+# Entry points:
+#   Web UI:      http://localhost:8080
+#   API gateway: http://localhost:18888
+#
+# All services communicate over the internal "tt-network" bridge.
+# Only the UI (8080) and gateway (18888) are exposed to the host.
+
+x-mysql-common: &mysql-common
+  image: mysql:8.0
+  # mysql_native_password: Spring Boot 2.x JDBC connectors pre-date the
+  # caching_sha2_password default introduced in MySQL 8.0. This flag restores
+  # the auth method that the embedded connector expects.
+  command: >
+    --default-authentication-plugin=mysql_native_password
+    --character-set-server=utf8mb4
+    --collation-server=utf8mb4_unicode_ci
+  environment:
+    MYSQL_ROOT_PASSWORD: root
+    MYSQL_DATABASE: ts
+  healthcheck:
+    test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+    interval: 10s
+    timeout: 5s
+    retries: 12
+    start_period: 30s
+  restart: unless-stopped
+  networks: [tt-network]
+
+x-java-common: &java-common
+  restart: always
+  networks: [tt-network]
+
+services:
+
+  # =========================================================================
+  # INFRASTRUCTURE
+  # =========================================================================
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    networks: [tt-network]
+
+  # =========================================================================
+  # DATABASES — one MySQL 8.0 instance per stateful service
+  # =========================================================================
+
+  ts-auth-mysql:
+    <<: *mysql-common
+
+  ts-user-mysql:
+    <<: *mysql-common
+
+  ts-route-mysql:
+    <<: *mysql-common
+
+  ts-contacts-mysql:
+    <<: *mysql-common
+
+  ts-order-mysql:
+    <<: *mysql-common
+
+  ts-order-other-mysql:
+    <<: *mysql-common
+
+  ts-config-mysql:
+    <<: *mysql-common
+
+  ts-station-mysql:
+    <<: *mysql-common
+
+  ts-train-mysql:
+    <<: *mysql-common
+
+  ts-travel-mysql:
+    <<: *mysql-common
+
+  ts-travel2-mysql:
+    <<: *mysql-common
+
+  ts-price-mysql:
+    <<: *mysql-common
+
+  ts-notification-mysql:
+    <<: *mysql-common
+
+  ts-security-mysql:
+    <<: *mysql-common
+
+  ts-inside-payment-mysql:
+    <<: *mysql-common
+
+  ts-payment-mysql:
+    <<: *mysql-common
+
+  ts-rebook-mysql:
+    <<: *mysql-common
+
+  ts-assurance-mysql:
+    <<: *mysql-common
+
+  ts-news-mysql:
+    <<: *mysql-common
+
+  ts-voucher-mysql:
+    <<: *mysql-common
+    volumes:
+      - ts-voucher-mysql-data:/var/lib/mysql
+
+  ts-food-mysql:
+    <<: *mysql-common
+
+  ts-consign-mysql:
+    <<: *mysql-common
+
+  ts-consign-price-mysql:
+    <<: *mysql-common
+
+  ts-delivery-mysql:
+    <<: *mysql-common
+
+  ts-food-delivery-mysql:
+    <<: *mysql-common
+
+  ts-gateway-mysql:
+    <<: *mysql-common
+
+  ts-station-food-mysql:
+    <<: *mysql-common
+
+  ts-train-food-mysql:
+    <<: *mysql-common
+
+  ts-wait-order-mysql:
+    <<: *mysql-common
+
+  # =========================================================================
+  # APPLICATION SERVICES — Java 21 / OpenResty images built via build/Makefile
+  # =========================================================================
+
+  # ---- Frontend ------------------------------------------------------------
+
+  ts-ui-dashboard:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-ui-dashboard:${TAG:-latest}
+    ports: ["8080:8080"]
+
+  # ---- Auth & identity -----------------------------------------------------
+
+  ts-auth-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-auth-service:${TAG:-latest}
+    depends_on:
+      ts-auth-mysql: {condition: service_healthy}
+      redis: {condition: service_started}
+
+  ts-user-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-user-service:${TAG:-latest}
+    depends_on:
+      ts-user-mysql: {condition: service_healthy}
+
+  ts-verification-code-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-verification-code-service:${TAG:-latest}
+
+  ts-security-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-security-service:${TAG:-latest}
+    depends_on:
+      ts-security-mysql: {condition: service_healthy}
+
+  # ---- Route & station -----------------------------------------------------
+
+  ts-route-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-route-service:${TAG:-latest}
+    depends_on:
+      ts-route-mysql: {condition: service_healthy}
+
+  ts-station-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-station-service:${TAG:-latest}
+    depends_on:
+      ts-station-mysql: {condition: service_healthy}
+
+  ts-train-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-train-service:${TAG:-latest}
+    depends_on:
+      ts-train-mysql: {condition: service_healthy}
+
+  ts-config-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-config-service:${TAG:-latest}
+    depends_on:
+      ts-config-mysql: {condition: service_healthy}
+
+  ts-basic-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-basic-service:${TAG:-latest}
+
+  # ---- Travel & booking ----------------------------------------------------
+
+  ts-travel-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-travel-service:${TAG:-latest}
+    depends_on:
+      ts-travel-mysql: {condition: service_healthy}
+
+  ts-travel2-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-travel2-service:${TAG:-latest}
+    depends_on:
+      ts-travel2-mysql: {condition: service_healthy}
+
+  ts-travel-plan-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-travel-plan-service:${TAG:-latest}
+
+  ts-contacts-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-contacts-service:${TAG:-latest}
+    depends_on:
+      ts-contacts-mysql: {condition: service_healthy}
+
+  ts-price-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-price-service:${TAG:-latest}
+    depends_on:
+      ts-price-mysql: {condition: service_healthy}
+
+  ts-seat-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-seat-service:${TAG:-latest}
+
+  ts-preserve-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-preserve-service:${TAG:-latest}
+
+  ts-preserve-other-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-preserve-other-service:${TAG:-latest}
+
+  ts-route-plan-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-route-plan-service:${TAG:-latest}
+
+  # ---- Orders --------------------------------------------------------------
+
+  ts-order-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-order-service:${TAG:-latest}
+    depends_on:
+      ts-order-mysql: {condition: service_healthy}
+
+  ts-order-other-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-order-other-service:${TAG:-latest}
+    depends_on:
+      ts-order-other-mysql: {condition: service_healthy}
+
+  ts-wait-order-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-wait-order-service:${TAG:-latest}
+    depends_on:
+      ts-wait-order-mysql: {condition: service_healthy}
+
+  # ---- Payments ------------------------------------------------------------
+
+  ts-inside-payment-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-inside-payment-service:${TAG:-latest}
+    depends_on:
+      ts-inside-payment-mysql: {condition: service_healthy}
+
+  ts-payment-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-payment-service:${TAG:-latest}
+    depends_on:
+      ts-payment-mysql: {condition: service_healthy}
+
+  ts-voucher-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-voucher-service:${TAG:-latest}
+    depends_on:
+      ts-voucher-mysql: {condition: service_healthy}
+
+  # ---- Post-booking operations ---------------------------------------------
+
+  ts-execute-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-execute-service:${TAG:-latest}
+
+  ts-cancel-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-cancel-service:${TAG:-latest}
+
+  ts-rebook-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-rebook-service:${TAG:-latest}
+    depends_on:
+      ts-rebook-mysql: {condition: service_healthy}
+
+  # ---- Supporting services -------------------------------------------------
+
+  ts-assurance-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-assurance-service:${TAG:-latest}
+    depends_on:
+      ts-assurance-mysql: {condition: service_healthy}
+
+  ts-notification-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-notification-service:${TAG:-latest}
+    depends_on:
+      ts-notification-mysql: {condition: service_healthy}
+
+  ts-news-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-news-service:${TAG:-latest}
+    depends_on:
+      ts-news-mysql: {condition: service_healthy}
+
+  ts-avatar-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-avatar-service:${TAG:-latest}
+
+  # ---- Consignment & food --------------------------------------------------
+
+  ts-consign-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-consign-service:${TAG:-latest}
+    depends_on:
+      ts-consign-mysql: {condition: service_healthy}
+
+  ts-consign-price-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-consign-price-service:${TAG:-latest}
+    depends_on:
+      ts-consign-price-mysql: {condition: service_healthy}
+
+  ts-food-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-food-service:${TAG:-latest}
+    depends_on:
+      ts-food-mysql: {condition: service_healthy}
+
+  ts-food-delivery-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-food-delivery-service:${TAG:-latest}
+    depends_on:
+      ts-food-delivery-mysql: {condition: service_healthy}
+
+  ts-station-food-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-station-food-service:${TAG:-latest}
+    depends_on:
+      ts-station-food-mysql: {condition: service_healthy}
+
+  ts-train-food-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-train-food-service:${TAG:-latest}
+    depends_on:
+      ts-train-food-mysql: {condition: service_healthy}
+
+  # ---- Delivery ------------------------------------------------------------
+
+  ts-delivery-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-delivery-service:${TAG:-latest}
+    depends_on:
+      ts-delivery-mysql: {condition: service_healthy}
+
+  # ---- Admin ---------------------------------------------------------------
+
+  ts-admin-basic-info-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-admin-basic-info-service:${TAG:-latest}
+
+  ts-admin-order-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-admin-order-service:${TAG:-latest}
+
+  ts-admin-route-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-admin-route-service:${TAG:-latest}
+
+  ts-admin-travel-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-admin-travel-service:${TAG:-latest}
+
+  ts-admin-user-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-admin-user-service:${TAG:-latest}
+
+  # ---- API gateway (main entry point for all API calls) --------------------
+
+  ts-gateway-service:
+    <<: *java-common
+    image: ${REGISTRY:-hdali00}/ts-gateway-service:${TAG:-latest}
+    # Only the gateway and the UI dashboard are exposed to the host.
+    # ts-assurance-service also uses port 18888 internally — no conflict since
+    # Docker isolates container ports; only host-port bindings must be unique.
+    ports: ["18888:18888"]
+    depends_on:
+      ts-gateway-mysql: {condition: service_healthy}
+
+  # =========================================================================
+  # NETWORKS & VOLUMES
+  # =========================================================================
+
+networks:
+  tt-network:
+    driver: bridge
+
+volumes:
+  # ts-voucher-service persists its MySQL data (legacy volume pattern from upstream).
+  ts-voucher-mysql-data:

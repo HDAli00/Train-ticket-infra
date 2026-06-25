@@ -1,0 +1,20 @@
+# ts-ui-dashboard — OpenResty (nginx + Lua) frontend.
+#
+# Replaces the original openresty/openresty:trusty (Ubuntu 14.04, EOL 2019)
+# with the current Alpine-based image. Built from the HDAli00/train-ticket root.
+#
+# Usage (run from the HDAli00/train-ticket source root):
+#   docker build -t hdali00/ts-ui-dashboard:latest \
+#                -f /path/to/train-ticket-infra/build/Dockerfile.ui-dashboard .
+
+FROM openresty/openresty:alpine
+
+RUN apk add --no-cache tzdata \
+    && cp /usr/share/zoneinfo/UTC /etc/localtime \
+    && echo UTC > /etc/timezone \
+    && apk del tzdata
+
+COPY ts-ui-dashboard/nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
+COPY ts-ui-dashboard/static /usr/share/nginx/html
+
+EXPOSE 8080
