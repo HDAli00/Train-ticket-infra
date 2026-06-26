@@ -1,0 +1,28 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: train-ticket
+
+resources:
+  # Namespace
+  - namespace.yaml
+  # Shared config
+  - configmaps.yaml
+  # Infrastructure (Redis)
+  - infra.yaml
+  # MySQL StatefulSets (29 instances)
+  - databases/auth-user-route-contacts.yaml
+  - databases/order-config-station.yaml
+  - databases/travel-price-notification-security.yaml
+  - databases/payment-assurance-news.yaml
+  - databases/food-consign-delivery-gateway.yaml
+  # Application microservices (45 services)
+  - services/auth-identity.yaml
+  - services/route-station.yaml
+  - services/travel-booking.yaml
+  - services/orders.yaml
+  - services/payments.yaml
+  - services/supporting.yaml
+  - services/food-delivery.yaml
+  - services/admin.yaml
+  - services/gateway.yaml

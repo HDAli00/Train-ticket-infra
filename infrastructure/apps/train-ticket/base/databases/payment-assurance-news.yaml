@@ -1,0 +1,270 @@
+# MySQL 8.0 StatefulSets: inside-payment, payment, rebook, assurance, news, voucher
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-inside-payment-mysql
+  labels: {app: ts-inside-payment-mysql, component: database}
+spec:
+  serviceName: ts-inside-payment-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-inside-payment-mysql}
+  template:
+    metadata:
+      labels: {app: ts-inside-payment-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-inside-payment-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-inside-payment-mysql}
+  ports:
+    - {port: 3306, name: mysql}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-payment-mysql
+  labels: {app: ts-payment-mysql, component: database}
+spec:
+  serviceName: ts-payment-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-payment-mysql}
+  template:
+    metadata:
+      labels: {app: ts-payment-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-payment-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-payment-mysql}
+  ports:
+    - {port: 3306, name: mysql}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-rebook-mysql
+  labels: {app: ts-rebook-mysql, component: database}
+spec:
+  serviceName: ts-rebook-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-rebook-mysql}
+  template:
+    metadata:
+      labels: {app: ts-rebook-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-rebook-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-rebook-mysql}
+  ports:
+    - {port: 3306, name: mysql}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-assurance-mysql
+  labels: {app: ts-assurance-mysql, component: database}
+spec:
+  serviceName: ts-assurance-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-assurance-mysql}
+  template:
+    metadata:
+      labels: {app: ts-assurance-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-assurance-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-assurance-mysql}
+  ports:
+    - {port: 3306, name: mysql}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-news-mysql
+  labels: {app: ts-news-mysql, component: database}
+spec:
+  serviceName: ts-news-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-news-mysql}
+  template:
+    metadata:
+      labels: {app: ts-news-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-news-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-news-mysql}
+  ports:
+    - {port: 3306, name: mysql}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-voucher-mysql
+  labels: {app: ts-voucher-mysql, component: database}
+spec:
+  serviceName: ts-voucher-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-voucher-mysql}
+  template:
+    metadata:
+      labels: {app: ts-voucher-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-voucher-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-voucher-mysql}
+  ports:
+    - {port: 3306, name: mysql}

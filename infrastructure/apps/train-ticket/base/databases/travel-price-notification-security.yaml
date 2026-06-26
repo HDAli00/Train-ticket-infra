@@ -1,0 +1,216 @@
+# MySQL 8.0 StatefulSets: travel, travel2, price, notification, security
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-travel-mysql
+  labels: {app: ts-travel-mysql, component: database}
+spec:
+  serviceName: ts-travel-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-travel-mysql}
+  template:
+    metadata:
+      labels: {app: ts-travel-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-travel-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-travel-mysql}
+  ports:
+    - {port: 3306, name: mysql}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-travel2-mysql
+  labels: {app: ts-travel2-mysql, component: database}
+spec:
+  serviceName: ts-travel2-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-travel2-mysql}
+  template:
+    metadata:
+      labels: {app: ts-travel2-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-travel2-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-travel2-mysql}
+  ports:
+    - {port: 3306, name: mysql}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-price-mysql
+  labels: {app: ts-price-mysql, component: database}
+spec:
+  serviceName: ts-price-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-price-mysql}
+  template:
+    metadata:
+      labels: {app: ts-price-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-price-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-price-mysql}
+  ports:
+    - {port: 3306, name: mysql}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-notification-mysql
+  labels: {app: ts-notification-mysql, component: database}
+spec:
+  serviceName: ts-notification-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-notification-mysql}
+  template:
+    metadata:
+      labels: {app: ts-notification-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-notification-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-notification-mysql}
+  ports:
+    - {port: 3306, name: mysql}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-security-mysql
+  labels: {app: ts-security-mysql, component: database}
+spec:
+  serviceName: ts-security-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-security-mysql}
+  template:
+    metadata:
+      labels: {app: ts-security-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-security-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-security-mysql}
+  ports:
+    - {port: 3306, name: mysql}

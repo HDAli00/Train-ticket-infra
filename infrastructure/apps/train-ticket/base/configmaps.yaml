@@ -1,0 +1,14 @@
+# Shared JVM flags injected into every Java service container.
+# --add-opens: Spring Boot 2.x uses reflection patterns restricted under
+# Java 9+ module system. Replicates what Spring Boot 3.x sets by default.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: java-opts
+data:
+  JAVA_OPTS: >-
+    -XX:MaxRAMPercentage=75.0
+    --add-opens=java.base/java.lang=ALL-UNNAMED
+    --add-opens=java.base/java.util=ALL-UNNAMED
+    --add-opens=java.base/java.lang.reflect=ALL-UNNAMED
+    --add-opens=java.base/java.io=ALL-UNNAMED

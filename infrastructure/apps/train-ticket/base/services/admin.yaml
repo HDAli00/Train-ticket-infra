@@ -1,0 +1,207 @@
+# Java microservices: admin-basic-info (18767), admin-order (16112), admin-route (16113),
+# admin-travel (16114), admin-user (16115)
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-admin-basic-info-service
+  labels: {app: ts-admin-basic-info-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-admin-basic-info-service}
+  template:
+    metadata:
+      labels: {app: ts-admin-basic-info-service}
+    spec:
+      containers:
+        - name: ts-admin-basic-info-service
+          image: hdali00/ts-admin-basic-info-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 18767
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 18767}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-admin-basic-info-service
+spec:
+  selector: {app: ts-admin-basic-info-service}
+  ports:
+    - {port: 18767, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-admin-order-service
+  labels: {app: ts-admin-order-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-admin-order-service}
+  template:
+    metadata:
+      labels: {app: ts-admin-order-service}
+    spec:
+      containers:
+        - name: ts-admin-order-service
+          image: hdali00/ts-admin-order-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 16112
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 16112}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-admin-order-service
+spec:
+  selector: {app: ts-admin-order-service}
+  ports:
+    - {port: 16112, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-admin-route-service
+  labels: {app: ts-admin-route-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-admin-route-service}
+  template:
+    metadata:
+      labels: {app: ts-admin-route-service}
+    spec:
+      containers:
+        - name: ts-admin-route-service
+          image: hdali00/ts-admin-route-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 16113
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 16113}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-admin-route-service
+spec:
+  selector: {app: ts-admin-route-service}
+  ports:
+    - {port: 16113, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-admin-travel-service
+  labels: {app: ts-admin-travel-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-admin-travel-service}
+  template:
+    metadata:
+      labels: {app: ts-admin-travel-service}
+    spec:
+      containers:
+        - name: ts-admin-travel-service
+          image: hdali00/ts-admin-travel-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 16114
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 16114}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-admin-travel-service
+spec:
+  selector: {app: ts-admin-travel-service}
+  ports:
+    - {port: 16114, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-admin-user-service
+  labels: {app: ts-admin-user-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-admin-user-service}
+  template:
+    metadata:
+      labels: {app: ts-admin-user-service}
+    spec:
+      containers:
+        - name: ts-admin-user-service
+          image: hdali00/ts-admin-user-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 16115
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 16115}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-admin-user-service
+spec:
+  selector: {app: ts-admin-user-service}
+  ports:
+    - {port: 16115, name: http}

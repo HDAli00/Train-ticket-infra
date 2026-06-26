@@ -1,0 +1,165 @@
+# Java microservices: auth (12340), user (12342), verification-code (15678), security (11188)
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-auth-service
+  labels: {app: ts-auth-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-auth-service}
+  template:
+    metadata:
+      labels: {app: ts-auth-service}
+    spec:
+      containers:
+        - name: ts-auth-service
+          image: hdali00/ts-auth-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 12340
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 12340}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-auth-service
+spec:
+  selector: {app: ts-auth-service}
+  ports:
+    - {port: 12340, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-user-service
+  labels: {app: ts-user-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-user-service}
+  template:
+    metadata:
+      labels: {app: ts-user-service}
+    spec:
+      containers:
+        - name: ts-user-service
+          image: hdali00/ts-user-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 12342
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 12342}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-user-service
+spec:
+  selector: {app: ts-user-service}
+  ports:
+    - {port: 12342, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-verification-code-service
+  labels: {app: ts-verification-code-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-verification-code-service}
+  template:
+    metadata:
+      labels: {app: ts-verification-code-service}
+    spec:
+      containers:
+        - name: ts-verification-code-service
+          image: hdali00/ts-verification-code-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 15678
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 15678}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-verification-code-service
+spec:
+  selector: {app: ts-verification-code-service}
+  ports:
+    - {port: 15678, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-security-service
+  labels: {app: ts-security-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-security-service}
+  template:
+    metadata:
+      labels: {app: ts-security-service}
+    spec:
+      containers:
+        - name: ts-security-service
+          image: hdali00/ts-security-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 11188
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 11188}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-security-service
+spec:
+  selector: {app: ts-security-service}
+  ports:
+    - {port: 11188, name: http}

@@ -1,0 +1,389 @@
+# MySQL 8.0 StatefulSets: food, consign, consign-price, delivery, food-delivery,
+# gateway, station-food, train-food, wait-order
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-food-mysql
+  labels: {app: ts-food-mysql, component: database}
+spec:
+  serviceName: ts-food-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-food-mysql}
+  template:
+    metadata:
+      labels: {app: ts-food-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-food-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-food-mysql}
+  ports:
+    - {port: 3306, name: mysql}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-consign-mysql
+  labels: {app: ts-consign-mysql, component: database}
+spec:
+  serviceName: ts-consign-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-consign-mysql}
+  template:
+    metadata:
+      labels: {app: ts-consign-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-consign-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-consign-mysql}
+  ports:
+    - {port: 3306, name: mysql}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-consign-price-mysql
+  labels: {app: ts-consign-price-mysql, component: database}
+spec:
+  serviceName: ts-consign-price-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-consign-price-mysql}
+  template:
+    metadata:
+      labels: {app: ts-consign-price-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-consign-price-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-consign-price-mysql}
+  ports:
+    - {port: 3306, name: mysql}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-delivery-mysql
+  labels: {app: ts-delivery-mysql, component: database}
+spec:
+  serviceName: ts-delivery-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-delivery-mysql}
+  template:
+    metadata:
+      labels: {app: ts-delivery-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-delivery-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-delivery-mysql}
+  ports:
+    - {port: 3306, name: mysql}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-food-delivery-mysql
+  labels: {app: ts-food-delivery-mysql, component: database}
+spec:
+  serviceName: ts-food-delivery-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-food-delivery-mysql}
+  template:
+    metadata:
+      labels: {app: ts-food-delivery-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-food-delivery-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-food-delivery-mysql}
+  ports:
+    - {port: 3306, name: mysql}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-gateway-mysql
+  labels: {app: ts-gateway-mysql, component: database}
+spec:
+  serviceName: ts-gateway-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-gateway-mysql}
+  template:
+    metadata:
+      labels: {app: ts-gateway-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-gateway-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-gateway-mysql}
+  ports:
+    - {port: 3306, name: mysql}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-station-food-mysql
+  labels: {app: ts-station-food-mysql, component: database}
+spec:
+  serviceName: ts-station-food-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-station-food-mysql}
+  template:
+    metadata:
+      labels: {app: ts-station-food-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-station-food-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-station-food-mysql}
+  ports:
+    - {port: 3306, name: mysql}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-train-food-mysql
+  labels: {app: ts-train-food-mysql, component: database}
+spec:
+  serviceName: ts-train-food-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-train-food-mysql}
+  template:
+    metadata:
+      labels: {app: ts-train-food-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-train-food-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-train-food-mysql}
+  ports:
+    - {port: 3306, name: mysql}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-wait-order-mysql
+  labels: {app: ts-wait-order-mysql, component: database}
+spec:
+  serviceName: ts-wait-order-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-wait-order-mysql}
+  template:
+    metadata:
+      labels: {app: ts-wait-order-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-wait-order-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-wait-order-mysql}
+  ports:
+    - {port: 3306, name: mysql}

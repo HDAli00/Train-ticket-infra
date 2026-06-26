@@ -1,0 +1,206 @@
+# Java microservices: route (11178), station (12345), train (14567), config (15679), basic (15680)
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-route-service
+  labels: {app: ts-route-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-route-service}
+  template:
+    metadata:
+      labels: {app: ts-route-service}
+    spec:
+      containers:
+        - name: ts-route-service
+          image: hdali00/ts-route-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 11178
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 11178}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-route-service
+spec:
+  selector: {app: ts-route-service}
+  ports:
+    - {port: 11178, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-station-service
+  labels: {app: ts-station-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-station-service}
+  template:
+    metadata:
+      labels: {app: ts-station-service}
+    spec:
+      containers:
+        - name: ts-station-service
+          image: hdali00/ts-station-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 12345
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 12345}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-station-service
+spec:
+  selector: {app: ts-station-service}
+  ports:
+    - {port: 12345, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-train-service
+  labels: {app: ts-train-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-train-service}
+  template:
+    metadata:
+      labels: {app: ts-train-service}
+    spec:
+      containers:
+        - name: ts-train-service
+          image: hdali00/ts-train-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 14567
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 14567}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-train-service
+spec:
+  selector: {app: ts-train-service}
+  ports:
+    - {port: 14567, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-config-service
+  labels: {app: ts-config-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-config-service}
+  template:
+    metadata:
+      labels: {app: ts-config-service}
+    spec:
+      containers:
+        - name: ts-config-service
+          image: hdali00/ts-config-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 15679
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 15679}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-config-service
+spec:
+  selector: {app: ts-config-service}
+  ports:
+    - {port: 15679, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-basic-service
+  labels: {app: ts-basic-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-basic-service}
+  template:
+    metadata:
+      labels: {app: ts-basic-service}
+    spec:
+      containers:
+        - name: ts-basic-service
+          image: hdali00/ts-basic-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 15680
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 15680}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-basic-service
+spec:
+  selector: {app: ts-basic-service}
+  ports:
+    - {port: 15680, name: http}

@@ -1,0 +1,124 @@
+# Java microservices: order (12031), order-other (12032), wait-order (17525)
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-order-service
+  labels: {app: ts-order-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-order-service}
+  template:
+    metadata:
+      labels: {app: ts-order-service}
+    spec:
+      containers:
+        - name: ts-order-service
+          image: hdali00/ts-order-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 12031
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 12031}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-order-service
+spec:
+  selector: {app: ts-order-service}
+  ports:
+    - {port: 12031, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-order-other-service
+  labels: {app: ts-order-other-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-order-other-service}
+  template:
+    metadata:
+      labels: {app: ts-order-other-service}
+    spec:
+      containers:
+        - name: ts-order-other-service
+          image: hdali00/ts-order-other-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 12032
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 12032}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-order-other-service
+spec:
+  selector: {app: ts-order-other-service}
+  ports:
+    - {port: 12032, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-wait-order-service
+  labels: {app: ts-wait-order-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-wait-order-service}
+  template:
+    metadata:
+      labels: {app: ts-wait-order-service}
+    spec:
+      containers:
+        - name: ts-wait-order-service
+          image: hdali00/ts-wait-order-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 17525
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 17525}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-wait-order-service
+spec:
+  selector: {app: ts-wait-order-service}
+  ports:
+    - {port: 17525, name: http}

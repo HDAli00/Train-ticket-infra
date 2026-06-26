@@ -1,0 +1,165 @@
+# Java microservices: assurance (18888), notification (17853), news (12862), avatar (17001)
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-assurance-service
+  labels: {app: ts-assurance-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-assurance-service}
+  template:
+    metadata:
+      labels: {app: ts-assurance-service}
+    spec:
+      containers:
+        - name: ts-assurance-service
+          image: hdali00/ts-assurance-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 18888
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 18888}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-assurance-service
+spec:
+  selector: {app: ts-assurance-service}
+  ports:
+    - {port: 18888, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-notification-service
+  labels: {app: ts-notification-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-notification-service}
+  template:
+    metadata:
+      labels: {app: ts-notification-service}
+    spec:
+      containers:
+        - name: ts-notification-service
+          image: hdali00/ts-notification-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 17853
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 17853}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-notification-service
+spec:
+  selector: {app: ts-notification-service}
+  ports:
+    - {port: 17853, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-news-service
+  labels: {app: ts-news-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-news-service}
+  template:
+    metadata:
+      labels: {app: ts-news-service}
+    spec:
+      containers:
+        - name: ts-news-service
+          image: hdali00/ts-news-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 12862
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 12862}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-news-service
+spec:
+  selector: {app: ts-news-service}
+  ports:
+    - {port: 12862, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-avatar-service
+  labels: {app: ts-avatar-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-avatar-service}
+  template:
+    metadata:
+      labels: {app: ts-avatar-service}
+    spec:
+      containers:
+        - name: ts-avatar-service
+          image: hdali00/ts-avatar-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 17001
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 17001}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-avatar-service
+spec:
+  selector: {app: ts-avatar-service}
+  ports:
+    - {port: 17001, name: http}

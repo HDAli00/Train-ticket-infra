@@ -1,0 +1,248 @@
+# Java microservices: inside-payment (18673), payment (19001), voucher (16101),
+# execute (12386), cancel (18885), rebook (18886)
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-inside-payment-service
+  labels: {app: ts-inside-payment-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-inside-payment-service}
+  template:
+    metadata:
+      labels: {app: ts-inside-payment-service}
+    spec:
+      containers:
+        - name: ts-inside-payment-service
+          image: hdali00/ts-inside-payment-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 18673
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 18673}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-inside-payment-service
+spec:
+  selector: {app: ts-inside-payment-service}
+  ports:
+    - {port: 18673, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-payment-service
+  labels: {app: ts-payment-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-payment-service}
+  template:
+    metadata:
+      labels: {app: ts-payment-service}
+    spec:
+      containers:
+        - name: ts-payment-service
+          image: hdali00/ts-payment-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 19001
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 19001}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-payment-service
+spec:
+  selector: {app: ts-payment-service}
+  ports:
+    - {port: 19001, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-voucher-service
+  labels: {app: ts-voucher-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-voucher-service}
+  template:
+    metadata:
+      labels: {app: ts-voucher-service}
+    spec:
+      containers:
+        - name: ts-voucher-service
+          image: hdali00/ts-voucher-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 16101
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 16101}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-voucher-service
+spec:
+  selector: {app: ts-voucher-service}
+  ports:
+    - {port: 16101, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-execute-service
+  labels: {app: ts-execute-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-execute-service}
+  template:
+    metadata:
+      labels: {app: ts-execute-service}
+    spec:
+      containers:
+        - name: ts-execute-service
+          image: hdali00/ts-execute-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 12386
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 12386}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-execute-service
+spec:
+  selector: {app: ts-execute-service}
+  ports:
+    - {port: 12386, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-cancel-service
+  labels: {app: ts-cancel-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-cancel-service}
+  template:
+    metadata:
+      labels: {app: ts-cancel-service}
+    spec:
+      containers:
+        - name: ts-cancel-service
+          image: hdali00/ts-cancel-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 18885
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 18885}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-cancel-service
+spec:
+  selector: {app: ts-cancel-service}
+  ports:
+    - {port: 18885, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-rebook-service
+  labels: {app: ts-rebook-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-rebook-service}
+  template:
+    metadata:
+      labels: {app: ts-rebook-service}
+    spec:
+      containers:
+        - name: ts-rebook-service
+          image: hdali00/ts-rebook-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 18886
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 18886}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-rebook-service
+spec:
+  selector: {app: ts-rebook-service}
+  ports:
+    - {port: 18886, name: http}

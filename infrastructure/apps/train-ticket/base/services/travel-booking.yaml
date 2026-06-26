@@ -1,0 +1,371 @@
+# Java microservices: travel (12346), travel2 (16346), preserve (14568), preserve-other (14569),
+# seat (18898), travel-plan (14322), route-plan (14578), price (16579), contacts (12347)
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-travel-service
+  labels: {app: ts-travel-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-travel-service}
+  template:
+    metadata:
+      labels: {app: ts-travel-service}
+    spec:
+      containers:
+        - name: ts-travel-service
+          image: hdali00/ts-travel-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 12346
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 12346}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-travel-service
+spec:
+  selector: {app: ts-travel-service}
+  ports:
+    - {port: 12346, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-travel2-service
+  labels: {app: ts-travel2-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-travel2-service}
+  template:
+    metadata:
+      labels: {app: ts-travel2-service}
+    spec:
+      containers:
+        - name: ts-travel2-service
+          image: hdali00/ts-travel2-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 16346
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 16346}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-travel2-service
+spec:
+  selector: {app: ts-travel2-service}
+  ports:
+    - {port: 16346, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-preserve-service
+  labels: {app: ts-preserve-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-preserve-service}
+  template:
+    metadata:
+      labels: {app: ts-preserve-service}
+    spec:
+      containers:
+        - name: ts-preserve-service
+          image: hdali00/ts-preserve-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 14568
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 14568}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-preserve-service
+spec:
+  selector: {app: ts-preserve-service}
+  ports:
+    - {port: 14568, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-preserve-other-service
+  labels: {app: ts-preserve-other-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-preserve-other-service}
+  template:
+    metadata:
+      labels: {app: ts-preserve-other-service}
+    spec:
+      containers:
+        - name: ts-preserve-other-service
+          image: hdali00/ts-preserve-other-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 14569
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 14569}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-preserve-other-service
+spec:
+  selector: {app: ts-preserve-other-service}
+  ports:
+    - {port: 14569, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-seat-service
+  labels: {app: ts-seat-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-seat-service}
+  template:
+    metadata:
+      labels: {app: ts-seat-service}
+    spec:
+      containers:
+        - name: ts-seat-service
+          image: hdali00/ts-seat-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 18898
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 18898}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-seat-service
+spec:
+  selector: {app: ts-seat-service}
+  ports:
+    - {port: 18898, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-travel-plan-service
+  labels: {app: ts-travel-plan-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-travel-plan-service}
+  template:
+    metadata:
+      labels: {app: ts-travel-plan-service}
+    spec:
+      containers:
+        - name: ts-travel-plan-service
+          image: hdali00/ts-travel-plan-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 14322
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 14322}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-travel-plan-service
+spec:
+  selector: {app: ts-travel-plan-service}
+  ports:
+    - {port: 14322, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-route-plan-service
+  labels: {app: ts-route-plan-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-route-plan-service}
+  template:
+    metadata:
+      labels: {app: ts-route-plan-service}
+    spec:
+      containers:
+        - name: ts-route-plan-service
+          image: hdali00/ts-route-plan-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 14578
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 14578}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-route-plan-service
+spec:
+  selector: {app: ts-route-plan-service}
+  ports:
+    - {port: 14578, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-price-service
+  labels: {app: ts-price-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-price-service}
+  template:
+    metadata:
+      labels: {app: ts-price-service}
+    spec:
+      containers:
+        - name: ts-price-service
+          image: hdali00/ts-price-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 16579
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 16579}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-price-service
+spec:
+  selector: {app: ts-price-service}
+  ports:
+    - {port: 16579, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-contacts-service
+  labels: {app: ts-contacts-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-contacts-service}
+  template:
+    metadata:
+      labels: {app: ts-contacts-service}
+    spec:
+      containers:
+        - name: ts-contacts-service
+          image: hdali00/ts-contacts-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 12347
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 12347}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-contacts-service
+spec:
+  selector: {app: ts-contacts-service}
+  ports:
+    - {port: 12347, name: http}

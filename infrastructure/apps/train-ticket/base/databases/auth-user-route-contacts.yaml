@@ -1,0 +1,178 @@
+# MySQL 8.0 StatefulSets: auth, user, route, contacts
+# --default-authentication-plugin=mysql_native_password: required for Spring Boot 2.x
+# JDBC connectors that pre-date caching_sha2_password (MySQL 8 default).
+{{- range $svc := list "ts-auth-mysql" "ts-user-mysql" "ts-route-mysql" "ts-contacts-mysql" }}
+# NOT templated — Kustomize does not support range; each resource is explicit below.
+{{- end }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-auth-mysql
+  labels: {app: ts-auth-mysql, component: database}
+spec:
+  serviceName: ts-auth-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-auth-mysql}
+  template:
+    metadata:
+      labels: {app: ts-auth-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-auth-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-auth-mysql}
+  ports:
+    - {port: 3306, name: mysql}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-user-mysql
+  labels: {app: ts-user-mysql, component: database}
+spec:
+  serviceName: ts-user-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-user-mysql}
+  template:
+    metadata:
+      labels: {app: ts-user-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-user-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-user-mysql}
+  ports:
+    - {port: 3306, name: mysql}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-route-mysql
+  labels: {app: ts-route-mysql, component: database}
+spec:
+  serviceName: ts-route-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-route-mysql}
+  template:
+    metadata:
+      labels: {app: ts-route-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-route-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-route-mysql}
+  ports:
+    - {port: 3306, name: mysql}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-contacts-mysql
+  labels: {app: ts-contacts-mysql, component: database}
+spec:
+  serviceName: ts-contacts-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-contacts-mysql}
+  template:
+    metadata:
+      labels: {app: ts-contacts-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-contacts-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-contacts-mysql}
+  ports:
+    - {port: 3306, name: mysql}

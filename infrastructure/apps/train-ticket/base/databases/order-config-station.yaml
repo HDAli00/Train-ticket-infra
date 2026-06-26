@@ -1,0 +1,216 @@
+# MySQL 8.0 StatefulSets: order, order-other, config, station, train
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-order-mysql
+  labels: {app: ts-order-mysql, component: database}
+spec:
+  serviceName: ts-order-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-order-mysql}
+  template:
+    metadata:
+      labels: {app: ts-order-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-order-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-order-mysql}
+  ports:
+    - {port: 3306, name: mysql}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-order-other-mysql
+  labels: {app: ts-order-other-mysql, component: database}
+spec:
+  serviceName: ts-order-other-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-order-other-mysql}
+  template:
+    metadata:
+      labels: {app: ts-order-other-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-order-other-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-order-other-mysql}
+  ports:
+    - {port: 3306, name: mysql}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-config-mysql
+  labels: {app: ts-config-mysql, component: database}
+spec:
+  serviceName: ts-config-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-config-mysql}
+  template:
+    metadata:
+      labels: {app: ts-config-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-config-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-config-mysql}
+  ports:
+    - {port: 3306, name: mysql}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-station-mysql
+  labels: {app: ts-station-mysql, component: database}
+spec:
+  serviceName: ts-station-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-station-mysql}
+  template:
+    metadata:
+      labels: {app: ts-station-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-station-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-station-mysql}
+  ports:
+    - {port: 3306, name: mysql}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts-train-mysql
+  labels: {app: ts-train-mysql, component: database}
+spec:
+  serviceName: ts-train-mysql
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-train-mysql}
+  template:
+    metadata:
+      labels: {app: ts-train-mysql}
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          args: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4"]
+          env:
+            - {name: MYSQL_ROOT_PASSWORD, value: "root"}
+            - {name: MYSQL_DATABASE, value: "ts"}
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          resources:
+            requests: {memory: "128Mi", cpu: "50m"}
+            limits:  {memory: "512Mi", cpu: "300m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-train-mysql
+spec:
+  clusterIP: None
+  selector: {app: ts-train-mysql}
+  ports:
+    - {port: 3306, name: mysql}

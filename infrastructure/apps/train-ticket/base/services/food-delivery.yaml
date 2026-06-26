@@ -1,0 +1,289 @@
+# Java microservices: food (18856), food-delivery (18957), station-food (18855),
+# train-food (19999), delivery (18808), consign (16111), consign-price (16110)
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-food-service
+  labels: {app: ts-food-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-food-service}
+  template:
+    metadata:
+      labels: {app: ts-food-service}
+    spec:
+      containers:
+        - name: ts-food-service
+          image: hdali00/ts-food-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 18856
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 18856}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-food-service
+spec:
+  selector: {app: ts-food-service}
+  ports:
+    - {port: 18856, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-food-delivery-service
+  labels: {app: ts-food-delivery-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-food-delivery-service}
+  template:
+    metadata:
+      labels: {app: ts-food-delivery-service}
+    spec:
+      containers:
+        - name: ts-food-delivery-service
+          image: hdali00/ts-food-delivery-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 18957
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 18957}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-food-delivery-service
+spec:
+  selector: {app: ts-food-delivery-service}
+  ports:
+    - {port: 18957, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-station-food-service
+  labels: {app: ts-station-food-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-station-food-service}
+  template:
+    metadata:
+      labels: {app: ts-station-food-service}
+    spec:
+      containers:
+        - name: ts-station-food-service
+          image: hdali00/ts-station-food-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 18855
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 18855}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-station-food-service
+spec:
+  selector: {app: ts-station-food-service}
+  ports:
+    - {port: 18855, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-train-food-service
+  labels: {app: ts-train-food-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-train-food-service}
+  template:
+    metadata:
+      labels: {app: ts-train-food-service}
+    spec:
+      containers:
+        - name: ts-train-food-service
+          image: hdali00/ts-train-food-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 19999
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 19999}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-train-food-service
+spec:
+  selector: {app: ts-train-food-service}
+  ports:
+    - {port: 19999, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-delivery-service
+  labels: {app: ts-delivery-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-delivery-service}
+  template:
+    metadata:
+      labels: {app: ts-delivery-service}
+    spec:
+      containers:
+        - name: ts-delivery-service
+          image: hdali00/ts-delivery-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 18808
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 18808}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-delivery-service
+spec:
+  selector: {app: ts-delivery-service}
+  ports:
+    - {port: 18808, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-consign-service
+  labels: {app: ts-consign-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-consign-service}
+  template:
+    metadata:
+      labels: {app: ts-consign-service}
+    spec:
+      containers:
+        - name: ts-consign-service
+          image: hdali00/ts-consign-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 16111
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 16111}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-consign-service
+spec:
+  selector: {app: ts-consign-service}
+  ports:
+    - {port: 16111, name: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ts-consign-price-service
+  labels: {app: ts-consign-price-service, component: service}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: ts-consign-price-service}
+  template:
+    metadata:
+      labels: {app: ts-consign-price-service}
+    spec:
+      containers:
+        - name: ts-consign-price-service
+          image: hdali00/ts-consign-price-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 16110
+          env:
+            - name: JAVA_OPTS
+              valueFrom:
+                configMapKeyRef: {name: java-opts, key: JAVA_OPTS}
+          readinessProbe:
+            tcpSocket: {port: 16110}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: {memory: "256Mi", cpu: "100m"}
+            limits:  {memory: "512Mi", cpu: "500m"}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ts-consign-price-service
+spec:
+  selector: {app: ts-consign-price-service}
+  ports:
+    - {port: 16110, name: http}
